@@ -12,20 +12,20 @@ group MeaslesLogicalModelToResources(source lm : MeaslesLogicalModel, target bun
   lm -> uuid() as bid, bundle.id = bid "set id";
   lm -> uuid() as cid, uuid() as pid, uuid() as prid, uuid() as oid, uuid() as eid, create('http://worldhealthorganization.github.io/smart-ot/StructureDefinition/MeaslesCIFComposition') as composition  then {  
     lm -> bundle.entry as entry, entry.fullUrl = append('urn:uuid:', pid), create('Patient') as patient then {
-    lm.Demographics as demographics -> demographics then DemographicsToPatient(demographics, patient, pid) "create patient";
-    lm -> entry.resource = patient "set patient as entry";
+      lm.Demographics as demographics -> demographics then DemographicsToPatient(demographics, patient, pid) "create patient";
+      lm -> entry.resource = patient "set patient as entry";
     } "map patient resource";
     lm -> bundle.entry as entry, entry.fullUrl = append('urn:uuid:', prid), create('Practitioner') as practitioner then {
-    lm.ReportingSource as reportingSource -> reportingSource then ReportingSourceToPractitioner(reportingSource, practitioner, prid) "create practitioner";
-    lm -> entry.resource = practitioner "set practitioner as entry";
+      lm.ReportingSource as reportingSource -> reportingSource then ReportingSourceToPractitioner(reportingSource, practitioner, prid) "create practitioner";
+      lm -> entry.resource = practitioner "set practitioner as entry";
     } "map practitioner resource" ;
     lm -> bundle.entry as entry, entry.fullUrl = append('urn:uuid:', oid), create('Organization') as organization then {
-    lm.ReportingSource as reportingSource -> reportingSource then ReportingSourceToOrganization(reportingSource, organization, oid) "create organization";
-    lm -> entry.resource = organization "set organization as entry";
+      lm.ReportingSource as reportingSource -> reportingSource then ReportingSourceToOrganization(reportingSource, organization, oid) "create organization";
+      lm -> entry.resource = organization "set organization as entry";
     } "map organization resource";
     lm -> bundle.entry as entry, entry.fullUrl = append('urn:uuid:', eid), create('Encounter') as encounter then {
-    lm.ReportingSource as reportingSource -> reportingSource then ReportingSourceToEncounter(reportingSource, encounter, eid) "create encounter";
-    lm -> entry.resource = encounter "set encounter as entry";
+      lm.ReportingSource as reportingSource -> reportingSource then ReportingSourceToEncounter(reportingSource, encounter, eid) "create encounter";
+      lm -> entry.resource = encounter "set encounter as entry";
     } "map encounter resource";
     lm.Clinical as clinical -> clinical then mapClinicalToObservations (clinical, bundle, composition, pid) "set clinical data";
     lm -> composition.section as section then {
@@ -34,8 +34,8 @@ group MeaslesLogicalModelToResources(source lm : MeaslesLogicalModel, target bun
       lm.LaboratoryResults as labs -> labs then mapLabsToObservations (labs, bundle, section, pid) "set labs data";
     } "set lab section";
     lm -> bundle.entry as entry,  entry.fullUrl = append('urn:uuid:', cid) then {
-    lm -> lm then LmToComposition(lm, composition, cid, pid, prid, oid, eid) "create composition";
-    lm -> entry.resource = composition "set composition";
+      lm -> lm then LmToComposition(lm, composition, cid, pid, prid, oid, eid) "create composition";
+      lm -> entry.resource = composition "set composition";
     } "map composition resource";
   } "set entries" ;
 }
@@ -55,7 +55,7 @@ group mapClinicalToObservationEntries(source clinical : MeaslesClinical, target 
  clinical -> observation.status  = "registered" "set status";
  clinical -> create('Coding') as coding, coding.code = "45701-0", coding.system = "https://loinc.org", coding.display = "Fever", create('CodeableConcept') as code, code.coding = coding,  observation.code = code "set code"; 
  clinical -> observation.subject as subject then {
- clinical -> subject.reference = append('Patient/',pid) "set subject";
+   clinical -> subject.reference = append('Patient/',pid) "set subject";
  } "set subject";
 }
 

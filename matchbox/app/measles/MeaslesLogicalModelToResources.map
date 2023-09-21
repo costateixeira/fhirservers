@@ -44,7 +44,9 @@ group MeaslesLogicalModelToResources(source lm : MeaslesLogicalModel, target bun
     lm.Clinical as clinical -> clinical then mapClinicalToObservations (clinical, bundle, composition, pid) "set clinical data";
 
     lm -> centry.fullUrl = append('urn:uuid:', cid) then {
+      composition.version = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" "xset";
       lm -> lm then LmToComposition(lm, composition,  cid,  pid,  prid,  oid,  eid ) "set";
+      
     } "map composition resource";
 
     lm -> composition.section as section then {

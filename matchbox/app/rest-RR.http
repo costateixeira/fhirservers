@@ -52,7 +52,7 @@ Content-Type: text/fhir-mapping
 < ./{{folder}}/MeaslesQuestionnaireToResourcesTest.map
 
 ### see if SM is there
-GET {{host}}/StructureMap?url=http://worldhealthorganization.github.io/smart-otStructureMap/MeaslesQuestionnaireToLogicalModel HTTP/1.1
+GET {{host}}/StructureMap?url=http://worldhealthorganization.github.io/smart-ot/StructureMap/MeaslesQuestionnaireToLogicalModel HTTP/1.1
 
 
 

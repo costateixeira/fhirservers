@@ -11,6 +11,13 @@ group MeaslesLogicalModelToResources(source lm : MeaslesLogicalModel, target bun
   } "set timestamp";
   lm -> uuid() as bid, bundle.id = bid "set id";
   lm -> uuid() as cid, uuid() as pid, uuid() as prid, uuid() as oid, uuid() as eid, create('http://worldhealthorganization.github.io/smart-ot/StructureDefinition/MeaslesCIFComposition') as composition  then {  
+
+    lm -> bundle.entry as entry,  entry.fullUrl = append('urn:uuid:', cid) then {
+      lm -> lm then CreateComposition(lm, composition, cid, pid, prid, oid, eid) "create composition";
+      lm -> entry.resource = composition "add composition";
+    } "enter composition resource";
+
+
     lm -> bundle.entry as entry, entry.fullUrl = append('urn:uuid:', pid), create('Patient') as patient then {
       lm.Demographics as demographics -> demographics then DemographicsToPatient(demographics, patient, pid) "create patient";
       lm -> entry.resource = patient "set patient as entry";
@@ -35,7 +42,6 @@ group MeaslesLogicalModelToResources(source lm : MeaslesLogicalModel, target bun
     } "set lab section";
     lm -> bundle.entry as entry,  entry.fullUrl = append('urn:uuid:', cid) then {
       lm -> lm then LmToComposition(lm, composition, cid, pid, prid, oid, eid) "create composition";
-      lm -> entry.resource = composition "set composition";
     } "map composition resource";
   } "set entries" ;
 }
@@ -66,12 +72,14 @@ group mapLabsToObservations(source labs : MeaslesLabs, target bundle: Bundle, ta
  }*/
 }  
 
-
-group LmToComposition(source lm : MeaslesLogicalModel, target composition : MeaslesCIFComposition, source cid, source pid, source prid, source oid, source eid) {
+group CreateComposition(source lm : MeaslesLogicalModel, target composition : MeaslesCIFComposition, source cid, source pid, source prid, source oid, source eid) {
   cid -> composition.id = cid "set id";
   lm -> composition.status = "final" "set status";
   lm -> composition.title = "PAHO Measles Case Investigation Form" "set title";
   lm -> create('Coding') as coding, coding.code = "55751-2", coding.system = "http://loinc.org", coding.display = "Public health Case report", create('CodeableConcept') as code, code.coding = coding,  composition.type = code "set type";
+}
+
+group LmToComposition(source lm : MeaslesLogicalModel, target composition : MeaslesCIFComposition, source cid, source pid, source prid, source oid, source eid) {
   lm.ReportingSource as reportingSource -> reportingSource then {
     reportingSource.DateReportedLocal as date -> composition.date = date "set date";
   } "set date reported local";
